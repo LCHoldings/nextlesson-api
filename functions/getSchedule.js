@@ -1,7 +1,7 @@
 const axios = require('axios');
 const convertToSkola24 = require('./convertToSkola24');
 
-function getDateWeek(date) {
+function getDateWeek(date, scheduleDay) {
     const currentDate =
         (typeof date === 'object') ? date : new Date();
     const januaryFirst =
@@ -13,17 +13,32 @@ function getDateWeek(date) {
         new Date(currentDate.getFullYear(), 0,
             januaryFirst.getDate() + daysToNextMonday);
 
-    return (currentDate < nextMonday) ? 52 :
+    var week = (currentDate < nextMonday) ? 52 :
         (currentDate > nextMonday ? Math.ceil(
             (currentDate - nextMonday) / (24 * 3600 * 1000) / 7) : 1);
+
+    if (scheduleDay == 7 || scheduleDay == 6) {
+        if (week == 52) {
+            week = 1;
+        } else {
+            week++;
+        }
+    }
+
+    return week;
 }
 
-async function getSchedule(key, signature, municipality, unitGuid, schoolYear) {
+async function getSchedule(key, signature, municipality, unitGuid, schoolYear, scheduleId) {
     const date = new Date(new Date().toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" }));
-    const scheduleDay = (date.getDay() + 6) % 7 + 1;
-    const week = Math.ceil(getDateWeek(date));
+    var scheduleDay = (date.getDay() + 6) % 7 + 1;
+    const week = Math.ceil(getDateWeek(date, scheduleDay));
     const year = date.getFullYear();
 
+    if (scheduleDay == 6 || scheduleDay == 7) {
+        scheduleDay = 1;
+    }
+
+    console.log("!-! | --- GET SCHEDULE --- | !-!");
     console.log("!-! | Key: " + key);
     console.log("!-! | Signature: " + signature);
     console.log("!-! | Municipality: " + municipality);
@@ -66,12 +81,20 @@ async function getSchedule(key, signature, municipality, unitGuid, schoolYear) {
             throw new Error(res.data.exception.context);
         }
 
-        // Remove all data except for the info we need. Lets us cache the data without issues.
-        res.data.data.textList = [];
-        res.data.data.boxList = [];
-        res.data.data.lineList = [];
+        const schedule = {
+            date: {
+                year: year,
+                week: week,
+                day: scheduleDay
+            },
+            lessonInfo: res.data.data.lessonInfo,
+            schoolName: res.data.data.metadata[0].schoolName,
+            lastPublished: res.data.data.metadata[0].lastPublished,
+            className: scheduleId,
+            municipality
+        }
 
-        return res.data;
+        return schedule;
     } catch (err) {
         return ("An error occurred");
     }

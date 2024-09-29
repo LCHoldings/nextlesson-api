@@ -16,13 +16,14 @@ router.get("/:municipality/:unitGuid/:scheduleId", async (request, response) => 
 
         const schoolYear = await getSchoolYear(municipality);
 
-        const schedule = await getSchedule(key, signature, municipality, unitGuid, schoolYear);
+        const schedule = await getSchedule(key, signature, municipality, unitGuid, schoolYear, scheduleId);
         if (schedule === "An error occurred") {
             response.status(503).send({ "message": "An error occurred" });
         } else {
-            response.status(200).json({ schedule });
+            response.status(200).json(schedule);
         }
     } catch (error) {
+        console.log(error);
         response.status(500).send({ "message": "Internal Server Error" });
     }
 });
