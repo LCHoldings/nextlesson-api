@@ -12,7 +12,6 @@ import { getSchoolYear } from "../functions/schoolyear.functions";
 
 const cache = apicache.middleware;
 
-
 export const Router = express.Router()
 
 Router.get("/municipalities", async (req: Request, res: Response) => {
