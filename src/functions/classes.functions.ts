@@ -26,7 +26,7 @@ export const getClasses = async (municipality: string, unitGuid: string): Promis
         if (response.data.exception && response.data.exception.code) {
             throw new Error(response.data.exception?.context || 'Unknown error');
         } else {
-            return response.data.data;
+            return response.data.data.classes;
         }
 
     } catch (error) {
