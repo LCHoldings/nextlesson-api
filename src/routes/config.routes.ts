@@ -20,7 +20,7 @@ Router.get("/municipalities", async (req: Request, res: Response) => {
     res.send(municipalities).status(200);
 });
 
-Router.get("/schools/:municipality", cache('5 minutes'), async  (req: Request, res: Response) => {
+Router.get("/schools/:municipality", cache('5 minutes'), async (req: Request, res: Response) => {
     try {
         const municipality = req.params.municipality as string;
 
@@ -40,11 +40,11 @@ Router.get("/schools/:municipality", cache('5 minutes'), async  (req: Request, r
     }
 });
 
-Router.get("/schoolclasses/:municipality/:unitGuid", cache('5 minutes'), async (req: Request, res: Response) => {
+Router.get("/classes/:municipality/:unitGuid", cache('5 minutes'), async (req: Request, res: Response) => {
     try {
         const municipality = req.params.municipality as string;
         const unitGuid = req.params.unitGuid as string;
-        console.log(municipality, unitGuid);
+
         if (!municipality || !unitGuid) {
             res.status(400).send("Invalid parameters");
             return;
@@ -68,7 +68,7 @@ Router.get("/schedule/:municipality/:unitGuid/:scheduleId", cache('5 minutes'), 
         const unitGuid = req.params.unitGuid as string;
         const scheduleId = req.params.scheduleId as string;
 
-        if (!municipality || !unitGuid) {
+        if (!municipality || !unitGuid || !scheduleId) {
             res.status(400).send("Invalid parameters");
             return;
         }
@@ -78,7 +78,7 @@ Router.get("/schedule/:municipality/:unitGuid/:scheduleId", cache('5 minutes'), 
         const schoolYear = await getSchoolYear(municipality);
 
         const schedule = await getSchedule(key, signature, municipality, unitGuid, schoolYear, scheduleId);
-        if (schedule.className.length === 0) {
+        if (!schedule || schedule.className.length === 0) {
             res.status(404).send("No schedule found");
         } else {
             res.status(200).send(schedule);

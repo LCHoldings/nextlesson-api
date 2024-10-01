@@ -47,11 +47,10 @@ exports.Router.get("/schools/:municipality", cache('5 minutes'), (req, res) => _
         res.send(error).status(500);
     }
 }));
-exports.Router.get("/schoolclasses/:municipality/:unitGuid", cache('5 minutes'), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.Router.get("/classes/:municipality/:unitGuid", cache('5 minutes'), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const municipality = req.params.municipality;
         const unitGuid = req.params.unitGuid;
-        console.log(municipality, unitGuid);
         if (!municipality || !unitGuid) {
             res.status(400).send("Invalid parameters");
             return;
@@ -73,7 +72,7 @@ exports.Router.get("/schedule/:municipality/:unitGuid/:scheduleId", cache('5 min
         const municipality = req.params.municipality;
         const unitGuid = req.params.unitGuid;
         const scheduleId = req.params.scheduleId;
-        if (!municipality || !unitGuid) {
+        if (!municipality || !unitGuid || !scheduleId) {
             res.status(400).send("Invalid parameters");
             return;
         }
@@ -81,7 +80,7 @@ exports.Router.get("/schedule/:municipality/:unitGuid/:scheduleId", cache('5 min
         const signature = yield (0, signature_functions_1.getSignature)(scheduleId);
         const schoolYear = yield (0, schoolyear_functions_1.getSchoolYear)(municipality);
         const schedule = yield (0, schedules_functions_1.getSchedule)(key, signature, municipality, unitGuid, schoolYear, scheduleId);
-        if (schedule.className.length === 0) {
+        if (!schedule || schedule.className.length === 0) {
             res.status(404).send("No schedule found");
         }
         else {

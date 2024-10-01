@@ -42,7 +42,7 @@ const getClasses = (municipality, unitGuid) => __awaiter(void 0, void 0, void 0,
             throw new Error(((_a = response.data.exception) === null || _a === void 0 ? void 0 : _a.context) || 'Unknown error');
         }
         else {
-            return response.data.data;
+            return response.data.data.classes;
         }
     }
     catch (error) {
