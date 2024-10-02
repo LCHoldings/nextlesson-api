@@ -24,6 +24,11 @@ const signature_functions_1 = require("../functions/signature.functions");
 const schoolyear_functions_1 = require("../functions/schoolyear.functions");
 const cache = apicache_1.default.middleware;
 exports.Router = express_1.default.Router();
+exports.Router.get("/status", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.send({
+        status: "Online"
+    }).status(200);
+}));
 exports.Router.get("/municipalities", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const municipalities = yield (0, municipalities_functions_1.getMunicipalities)();
     res.send(municipalities).status(200);

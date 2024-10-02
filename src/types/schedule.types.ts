@@ -1,4 +1,3 @@
-
 interface LessonInfo {
     dayOfWeekNumber: number,
     guidId: string,

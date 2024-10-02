@@ -1,24 +1,33 @@
-
-import express , { Express, Request, Response } from "express";
+import express , { Request, Response } from "express";
 import apicache from 'apicache';
-
-import { getMunicipalities}  from "../functions/municipalities.functions";
-import { getSchools } from "../functions/school.functions";
-import { getClasses } from "../functions/classes.functions";
-import { getSchedule } from "../functions/schedules.functions";
-import { getKey } from "../functions/key.functions";
-import { getSignature } from "../functions/signature.functions";
-import { getSchoolYear } from "../functions/schoolyear.functions";
+import {
+    getMunicipalities,
+    getSchools,
+    getClasses,
+    getSchedule,
+    getKey,
+    getSignature,
+    getSchoolYear
+} from "../functions";
 
 const cache = apicache.middleware;
 
 export const Router = express.Router()
 
+// Health check
+Router.get("/status", async (req: Request, res: Response) => {
+    res.send({
+        status: "Online"
+    }).status(200);
+});
+
+// Get all municipalities from municipalities.json
 Router.get("/municipalities", async (req: Request, res: Response) => {
     const municipalities = await getMunicipalities();
     res.send(municipalities).status(200);
 });
 
+// Get all schools within a municipality
 Router.get("/schools/:municipality", cache('5 minutes'), async (req: Request, res: Response) => {
     try {
         const municipality = req.params.municipality as string;
@@ -39,6 +48,7 @@ Router.get("/schools/:municipality", cache('5 minutes'), async (req: Request, re
     }
 });
 
+// Get all classes within a school
 Router.get("/classes/:municipality/:unitGuid", cache('5 minutes'), async (req: Request, res: Response) => {
     try {
         const municipality = req.params.municipality as string;
@@ -61,6 +71,7 @@ Router.get("/classes/:municipality/:unitGuid", cache('5 minutes'), async (req: R
     }
 });
 
+// Get schedule for a specific class, school and municipality
 Router.get("/schedule/:municipality/:unitGuid/:scheduleId", cache('5 minutes'), async (req: Request, res: Response) => {
     try {
         const municipality = req.params.municipality as string;

@@ -44,6 +44,7 @@ const getSchedule = (key, signature, municipality, unitGuid, schoolYear, schedul
     let scheduleDay = (date.getDay() + 6) % 7 + 1;
     const week = Math.ceil((0, GetDateWeek_functions_1.getDateWeek)(date, scheduleDay));
     const year = date.getFullYear();
+    const day = date.getDate();
     if (scheduleDay === 6 || scheduleDay === 7) {
         scheduleDay = 1;
     }
@@ -58,6 +59,7 @@ const getSchedule = (key, signature, municipality, unitGuid, schoolYear, schedul
     console.log(`!-! | ScheduleDay: ${scheduleDay}`);
     console.log(`!-! | Week: ${week}`);
     console.log(`!-! | Year: ${year}`);
+    console.log(`!-! | Day: ${day}`);
     try {
         const res = yield axios_1.default.post('https://web.skola24.se/api/render/timetable', {
             renderKey: key,
@@ -88,11 +90,14 @@ const getSchedule = (key, signature, municipality, unitGuid, schoolYear, schedul
         if (res.data.exception && res.data.exception.code) {
             throw new Error(res.data.exception.context);
         }
+        else if (res.data.validation[0] && res.data.validation[0].message) {
+            throw new Error(res.data.validation[0].message);
+        }
         const schedule = {
             date: {
                 year: year,
                 week: week,
-                day: scheduleDay
+                day: day
             },
             lessonInfo: res.data.data.lessonInfo,
             schoolName: res.data.data.metadata[0].schoolName,

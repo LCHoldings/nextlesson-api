@@ -2,7 +2,6 @@ import axios from "axios";
 import { Convert } from "../functions/azconverter.functions";
 
 export const getClasses = async (municipality: string, unitGuid: string): Promise<string[]> => {
-    console.log(municipality, unitGuid);
     try {
         const response = await axios.post('https://web.skola24.se/api/get/timetable/selection', {
             "hostName": (Convert(municipality) + ".skola24.se"),
@@ -28,9 +27,7 @@ export const getClasses = async (municipality: string, unitGuid: string): Promis
         } else {
             return response.data.data.classes;
         }
-
     } catch (error) {
-        console.error("Error fetching schools:", error);
-        return [];
+        throw new Error("Error fetching schools");
     }
 }

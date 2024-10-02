@@ -15,6 +15,6 @@ export const getKey = async (): Promise<string> => {
 
         return res.data.data.key;
     } catch (err) {
-        return "An error occurred";
+        return "The key could not be fetched";
     }
 }

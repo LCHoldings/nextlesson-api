@@ -14,28 +14,18 @@ export const getSchedule = async (
     const date = new Date(new Date().toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" }));
 
     let scheduleDay = (date.getDay() + 6) % 7 + 1;
-    const week = Math.ceil(getDateWeek(date, scheduleDay));
 
+    const week = Math.ceil(getDateWeek(date, scheduleDay));
     const year = date.getFullYear();
+    const day = date.getDate();
 
 
     if (scheduleDay === 6 || scheduleDay === 7) {
         scheduleDay = 1;
     }
 
-    // Logging the details
-    console.log("!-! | --- GET SCHEDULE --- | !-!");
-    console.log(`!-! | Key: ${key}`);
-    console.log(`!-! | Signature: ${signature}`);
-    console.log(`!-! | Municipality: ${municipality}`);
-    console.log(`!-! | UnitGuid: ${unitGuid}`);
-    console.log(`!-! | SchoolYear: ${schoolYear}`);
-    console.log(`!-! | Host: ${AZConverter.Convert(municipality)}.skola24.se`);
-    console.log(`!-! | ScheduleDay: ${scheduleDay}`);
-    console.log(`!-! | Week: ${week}`);
-    console.log(`!-! | Year: ${year}`);
-
     try {
+        // Pretty ugly since its just a reverse engineered post request to the web interface Skola24 api
         const res = await axios.post('https://web.skola24.se/api/render/timetable', {
             renderKey: key,
             selection: signature,
@@ -65,13 +55,15 @@ export const getSchedule = async (
 
         if (res.data.exception && res.data.exception.code) {
             throw new Error(res.data.exception.context);
+        } else if (res.data.validation[0] && res.data.validation[0].message) {
+            throw new Error(res.data.validation[0].message);
         }
 
         const schedule: Schedule = {
             date: {
                 year: year,
                 week: week,
-                day: scheduleDay
+                day: day
             },
             lessonInfo: res.data.data.lessonInfo,
             schoolName: res.data.data.metadata[0].schoolName,
@@ -82,7 +74,7 @@ export const getSchedule = async (
 
         return schedule;
     } catch (err) {
-        console.error("An error occurred:", err);
+        // TODO: Return this error to the route so it can be sent to the client. (For all get functions)
         throw new Error("An error occurred while fetching the schedule.");
     }
 };

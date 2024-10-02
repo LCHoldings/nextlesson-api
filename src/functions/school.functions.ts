@@ -20,7 +20,6 @@ export const getSchools = async (schoolName: string): Promise<string[]> => {
 
         return unitsResponse.units;
     } catch (error) {
-        console.error("Error fetching schools:", error);
-        return [];
+        throw new Error("Error fetching schools");
     }
 };
