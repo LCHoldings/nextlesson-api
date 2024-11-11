@@ -17,5 +17,6 @@ export interface Schedule {
     schoolName: string,
     lastPublished: string,
     className: string,
+    unitGuid: string,
     municipality: string
 }
