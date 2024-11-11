@@ -14,11 +14,10 @@ export const getSchedule = async (
     const date = new Date(new Date().toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" }));
 
     let scheduleDay = (date.getDay() + 6) % 7 + 1;
-
+    
     const week = Math.ceil(getDateWeek(date, scheduleDay));
     const year = date.getFullYear();
     const day = date.getDate();
-
 
     if (scheduleDay === 6 || scheduleDay === 7) {
         scheduleDay = 1;
