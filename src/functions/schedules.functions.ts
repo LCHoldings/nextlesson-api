@@ -69,7 +69,7 @@ export const getSchedule = async (
             schoolName: res.data.data.metadata[0].schoolName,
             lastPublished: res.data.data.metadata[0].lastPublished,
             className: scheduleId,
-            unitGuid: unitGuid,
+            unitGuid,
             municipality
         };
 
