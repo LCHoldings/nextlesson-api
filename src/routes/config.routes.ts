@@ -17,7 +17,8 @@ export const Router = express.Router()
 // Health check
 Router.get("/status", async (req: Request, res: Response) => {
     res.send({
-        status: "Online"
+        status: true,
+        message: "N/A"
     }).status(200);
 });
 
