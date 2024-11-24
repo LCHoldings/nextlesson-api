@@ -58,13 +58,25 @@ export const getSchedule = async (
             throw new Error(res.data.validation[0].message);
         }
 
+        // Remove lessons that doesn't exist on the actual schedule on the website.
+        const lessonInfo = res.data.data.lessonInfo.filter((lesson: any) => {
+            return lesson.texts.every((text: string) => 
+                res.data.data.textList.some((textItem: any) => textItem.text === text)
+            );
+        }).map((lesson: any) => {
+            return {
+                ...lesson,
+                textExists: true
+            };
+        });
+
         const schedule: Schedule = {
             date: {
                 year: year,
                 week: week,
                 day: day
             },
-            lessonInfo: res.data.data.lessonInfo,
+            lessonInfo,
             schoolName: res.data.data.metadata[0].schoolName,
             lastPublished: res.data.data.metadata[0].lastPublished,
             className: scheduleId,
